@@ -1,14 +1,19 @@
 import React from 'react';
-import { Compliance } from '../types';
-import { AlertCircle, Clock, Globe, HelpCircle, ShieldAlert, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Compliance, UserInputs } from '../types';
+import { AlertCircle, Clock, Globe, HelpCircle, ShieldAlert, ExternalLink, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ComplianceCardProps {
   compliance: Compliance;
+  inputs: UserInputs;
 }
 
-export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance }) => {
+export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance, inputs }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const docRequirements = typeof compliance.documentRequirements === 'function' 
+    ? compliance.documentRequirements(inputs) 
+    : compliance.documentRequirements;
 
   const urgencyColors = {
     Red: 'border-red-500 bg-red-50 text-red-700',
@@ -26,6 +31,14 @@ export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance }) =>
     Conditional: <HelpCircle size={18} />,
   };
 
+  const typeColors: Record<string, string> = {
+    Regulatory: 'text-emerald-600',
+    Statutory: 'text-blue-600',
+    Certification: 'text-purple-600',
+    Standard: 'text-amber-600',
+    Incentive: 'text-indigo-600',
+  };
+
   return (
     <div className={`border-l-4 rounded-r-xl bg-white shadow-sm overflow-hidden transition-all ${urgencyColors[compliance.urgency]}`}>
       <div 
@@ -39,8 +52,13 @@ export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance }) =>
           <div>
             <div className="flex items-center gap-2 mb-0.5">
               <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">{compliance.category}</p>
+              <span className="text-zinc-300">•</span>
+              <p className={`text-[10px] font-bold uppercase tracking-widest ${typeColors[compliance.sourceType] || 'text-zinc-600'}`}>{compliance.sourceType}</p>
               <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-tighter ${compliance.isMandatory ? 'bg-zinc-900 text-white' : 'bg-indigo-600 text-white'}`}>
                 {compliance.isMandatory ? 'Mandatory' : 'Optional'}
+              </span>
+              <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-200 text-zinc-600 uppercase tracking-tighter">
+                v{compliance.version}
               </span>
             </div>
             <h3 className="font-bold text-zinc-900">{compliance.name}</h3>
@@ -48,7 +66,7 @@ export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance }) =>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-white/80 border border-black/5">
-            {compliance.urgency === 'Red' ? 'IMMEDIATE' : compliance.urgency === 'Yellow' ? 'UPCOMING' : compliance.urgency === 'Green' ? 'ROUTINE' : compliance.urgency === 'Conditional' ? 'EVENT' : 'GROWTH'}
+            {compliance.periodicity}
           </span>
           {isExpanded ? <ChevronUp size={20} className="text-zinc-400" /> : <ChevronDown size={20} className="text-zinc-400" />}
         </div>
@@ -67,23 +85,26 @@ export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance }) =>
                 <div className="flex gap-3">
                   <div className="mt-1 text-zinc-400"><HelpCircle size={16} /></div>
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">What</h4>
-                    <p className="text-sm text-zinc-700 leading-relaxed">{compliance.what}</p>
+                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Description</h4>
+                    <p className="text-sm text-zinc-700 leading-relaxed">{compliance.description}</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <div className="mt-1 text-zinc-400"><Clock size={16} /></div>
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">When</h4>
-                    <p className="text-sm text-zinc-700 leading-relaxed">{compliance.when}</p>
+                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Timeline & Logic</h4>
+                    <p className="text-sm text-zinc-700 leading-relaxed font-medium">{compliance.dueDateLogic}</p>
+                    {compliance.specificDate && (
+                      <p className="text-xs text-indigo-600 mt-1 font-bold">Next Deadline: {compliance.specificDate}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <div className="mt-1 text-zinc-400"><Globe size={16} /></div>
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Where</h4>
+                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Source</h4>
                     <a 
-                      href={compliance.whereUrl} 
+                      href={compliance.sourceUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1 underline underline-offset-4"
@@ -97,7 +118,7 @@ export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance }) =>
                 <div className="flex gap-3">
                   <div className="mt-1 text-zinc-400"><AlertCircle size={16} /></div>
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">How</h4>
+                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">How to Comply</h4>
                     <p className="text-sm text-zinc-700 leading-relaxed">{compliance.how}</p>
                   </div>
                 </div>
@@ -108,6 +129,38 @@ export const ComplianceCard: React.FC<ComplianceCardProps> = ({ compliance }) =>
                     <p className="text-sm text-red-700 font-medium leading-relaxed">{compliance.penalty}</p>
                   </div>
                 </div>
+
+                {docRequirements && docRequirements.length > 0 && (
+                  <div className="pt-4 mt-4 border-t border-black/5">
+                    <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                      <FileText size={14} className="text-emerald-500" />
+                      Document Requirements
+                    </h4>
+                    <div className="space-y-3">
+                      {docRequirements.map((doc, index) => (
+                        <div key={index} className="flex flex-col gap-1 p-2 rounded bg-white border border-zinc-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-zinc-900">{doc.name}</span>
+                            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-500 uppercase tracking-tighter">
+                              {doc.documentType}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-zinc-500 leading-tight">{doc.description}</p>
+                          {(doc.url || doc.informationUrl) && (
+                            <div className="flex gap-2 mt-1">
+                              {doc.url && (
+                                <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-[9px] text-emerald-600 hover:underline">Download Template</a>
+                              )}
+                              {doc.informationUrl && (
+                                <a href={doc.informationUrl} target="_blank" rel="noopener noreferrer" className="text-[9px] text-blue-600 hover:underline">More Info</a>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>

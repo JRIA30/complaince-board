@@ -166,7 +166,7 @@ export default function App() {
                       </span>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
-                      {redAlerts.map(c => <ComplianceCard key={c.id} compliance={c} />)}
+                      {redAlerts.map(c => <ComplianceCard key={c.id} compliance={c} inputs={inputs!} />)}
                     </div>
                   </section>
                 )}
@@ -184,7 +184,7 @@ export default function App() {
                       </span>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
-                      {yellowAlerts.map(c => <ComplianceCard key={c.id} compliance={c} />)}
+                      {yellowAlerts.map(c => <ComplianceCard key={c.id} compliance={c} inputs={inputs!} />)}
                     </div>
                   </section>
                 )}
@@ -202,7 +202,7 @@ export default function App() {
                       </span>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
-                      {greenAlerts.map(c => <ComplianceCard key={c.id} compliance={c} />)}
+                      {greenAlerts.map(c => <ComplianceCard key={c.id} compliance={c} inputs={inputs!} />)}
                     </div>
                   </section>
                 )}
@@ -220,7 +220,7 @@ export default function App() {
                       </span>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
-                      {conditionalAlerts.map(c => <ComplianceCard key={c.id} compliance={c} />)}
+                      {conditionalAlerts.map(c => <ComplianceCard key={c.id} compliance={c} inputs={inputs!} />)}
                     </div>
                   </section>
                 )}
@@ -238,7 +238,7 @@ export default function App() {
                       </span>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
-                      {incentiveAlerts.map(c => <ComplianceCard key={c.id} compliance={c} />)}
+                      {incentiveAlerts.map(c => <ComplianceCard key={c.id} compliance={c} inputs={inputs!} />)}
                     </div>
                   </section>
                 )}

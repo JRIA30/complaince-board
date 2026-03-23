@@ -2,6 +2,7 @@ export type EntityType = 'Pvt Ltd' | 'LLP' | 'OPC' | 'Proprietorship' | 'Partner
 export type TurnoverBracket = 'Pre-revenue' | '< ₹20L' | '₹20L - ₹40L' | '₹40L - ₹5Cr' | '₹5Cr - ₹100Cr' | '> ₹100Cr';
 export type EntityAge = '< 1 year' | '1-3 years' | '3-5 years' | '> 5 years';
 export type Urgency = 'Red' | 'Yellow' | 'Green' | 'Incentive' | 'Conditional';
+export type ComplianceType = 'Regulatory' | 'Statutory' | 'Certification' | 'Standard' | 'Incentive';
 
 export interface UserInputs {
   isIncorporated: boolean;
@@ -39,17 +40,31 @@ export interface EntitySetupGuide {
   cons: string[];
 }
 
+export interface DocumentRequirement {
+  name: string;
+  description: string;
+  documentType: 'Identity' | 'Address' | 'Entity' | 'Financial' | 'Other';
+  url?: string;
+  informationUrl?: string;
+}
+
 export interface Compliance {
   id: string;
   category: string;
   name: string;
+  description: string; // Renamed from 'what'
+  periodicity: 'One-time' | 'Monthly' | 'Quarterly' | 'Half-yearly' | 'Annual' | 'Event-based' | 'Ongoing';
+  dueDateLogic: string; // how early and when you should start
+  sourceType: ComplianceType; // Renamed from 'type'
+  sourceUrl: string; // Renamed from 'whereUrl'
+  isServiceBased: boolean;
+  specificDate?: string; // if any
+  version: string;
   urgency: Urgency;
-  what: string;
-  when: string;
   where: string;
-  whereUrl: string;
   how: string;
   penalty: string;
+  documentRequirements: DocumentRequirement[] | ((inputs: UserInputs) => DocumentRequirement[]); // Renamed from 'requiredDocuments'
   isMandatory: boolean;
   trigger: (inputs: UserInputs) => boolean;
 }
