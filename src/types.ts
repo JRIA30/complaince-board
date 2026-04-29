@@ -43,28 +43,30 @@ export interface EntitySetupGuide {
 export interface DocumentRequirement {
   name: string;
   description: string;
-  documentType: 'Identity' | 'Address' | 'Entity' | 'Financial' | 'Other';
-  url?: string;
-  informationUrl?: string;
+  document_type: string;
+  url: string;
+  information_url: string;
 }
 
 export interface Compliance {
   id: string;
-  category: string;
   name: string;
-  description: string; // Renamed from 'what'
-  periodicity: 'One-time' | 'Monthly' | 'Quarterly' | 'Half-yearly' | 'Annual' | 'Event-based' | 'Ongoing';
-  dueDateLogic: string; // how early and when you should start
-  sourceType: ComplianceType; // Renamed from 'type'
-  sourceUrl: string; // Renamed from 'whereUrl'
-  isServiceBased: boolean;
-  specificDate?: string; // if any
+  description: string;
+  periodicity: string;
+  due_date_logic: string;
+  source_type: ComplianceType;
+  source_url: string;
+  is_service_based: boolean;
+  specific_date?: string;
   version: string;
+  document_requirements: DocumentRequirement[] | ((inputs: UserInputs) => DocumentRequirement[]);
+  
+  // Metadata for UI grouping and logic
+  category: string;
   urgency: Urgency;
   where: string;
   how: string;
   penalty: string;
-  documentRequirements: DocumentRequirement[] | ((inputs: UserInputs) => DocumentRequirement[]); // Renamed from 'requiredDocuments'
   isMandatory: boolean;
   trigger: (inputs: UserInputs) => boolean;
 }
